@@ -36,9 +36,9 @@ public abstract class AbstractPlayer implements Playerable
        winCount = numwins;
    }
 
-   public int getWinCount() { return 0; }
+   public int getWinCount() { return winCount; }
 
-   public int getHandSize() { return 0; }
+   public int getHandSize() { return hand.size(); }
 
    public int getHandValue()
    {

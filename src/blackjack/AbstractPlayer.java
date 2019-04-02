@@ -7,7 +7,7 @@ package blackjack;
 //Lab  - 
 
 import java.util.ArrayList;
-import BlackJack.Card;
+//import blackjack.Card;
 
 public abstract class AbstractPlayer implements Playerable
 {
@@ -15,23 +15,25 @@ public abstract class AbstractPlayer implements Playerable
    private int winCount;
 
    //constructors
+   public AbstractPlayer(){
+       winCount = 0;
+       hand = new ArrayList<Card>();
+   }
 
    public  void addCardToHand( Card temp )
    {
-
+       hand.add(temp);
 
    }
 
    public  void resetHand( )
    {
-
-
+       hand.clear();
    }
 
    public  void setWinCount( int numwins )
    {
-
-
+       winCount = numwins;
    }
 
    public int getWinCount() { return 0; }
@@ -41,12 +43,10 @@ public abstract class AbstractPlayer implements Playerable
    public int getHandValue()
    {
 		//great example of polymorphism
-      int total=0;
-
-
-
-
-
+      int total = 0;
+      for(Card c : hand){
+          total += c.getValue();
+      }
 
 
       return total;

@@ -12,15 +12,19 @@ import java.util.Scanner;
 
 
 //define Player class here 
+class Player extends AbstractPlayer{
+
+    //constructors
+    public Player(){
+        super();
+    }
 
 
+    //hit method goes here
+    public boolean hit(){
+        return true;
+    }
 
+}
 
-	//constructors
-
-
-
-
-
-	//hit method goes here
 

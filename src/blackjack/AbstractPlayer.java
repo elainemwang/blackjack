@@ -54,6 +54,6 @@ public abstract class AbstractPlayer implements Playerable
 
    public String toString()
    {
-      return "hand = " + hand.toString() + " \n-  # wins " + winCount;
+      return "hand = " + hand.toString() + " - " + getHandValue();
    }
 }

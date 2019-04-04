@@ -7,61 +7,78 @@ package blackjack;
 //Lab  - 
 
 import static java.lang.System.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BlackJack
 {
-	//add in Player instance variable
-        private Player player;
-	//add in Dealer instance variable
-        private Dealer dealer;
+	private ArrayList<Playerable> players;
         
 	public BlackJack()
 	{
-            player = new Player();
-            dealer = new Dealer();
+            players = new ArrayList<Playerable>();
+            players.add(new Dealer());
+            
             
 	}
 
 	public void playGame()
 	{
+            Dealer dealer = (Dealer) players.get(0);
             Scanner keyboard = new Scanner(System.in);
             char choice;
             char play;
+            System.out.println("How many players?");
+            int numPlayers = keyboard.nextInt();
+            System.out.println();
+            for(int i = 0; i < numPlayers; i++){
+                players.add(new Player());
+            }
             do{
-                player.resetHand();
+               for(Playerable player : players){
+                   player.resetHand();
+               }
                 dealer.resetHand();
                 dealer.shuffle();
                 choice = 'Y';
-                // deal the player two cards
-
-                player.addCardToHand(dealer.deal());
-                player.addCardToHand(dealer.deal());
+                
                 // deal the dealer two cards
                 dealer.addCardToHand(dealer.deal());
                 dealer.addCardToHand(dealer.deal());
-
-                System.out.println("Current " + player);
-
-
-                while((choice == 'Y'||choice == 'y')&&player.getHandValue()<21){
-                    System.out.println("Do you want to hit? [Y/N]");
-                    choice = keyboard.next().charAt(0);
-                    if(choice == 'n' || choice == 'N'){
-                        break;
-                    }
-                    player.addCardToHand(dealer.deal());
-                    System.out.println("Current " + player);
-                }
+                
                 while(dealer.hit()){
                     dealer.addCardToHand(dealer.deal());
                 }
-                System.out.println();
-                System.out.println("PLAYER:  ");
-                System.out.println("Hand Value: "+player.getHandValue());
-                System.out.println("Hand Size: "+player.getHandSize());
-                System.out.println(player);
-
+                
+                // deal the players two cards
+                for( int i = 1; i < players.size(); i++){
+                    System.out.println("Current player: " + i);
+                    players.get(i).addCardToHand(dealer.deal());
+                    players.get(i).addCardToHand(dealer.deal());
+                    System.out.println(players.get(i));
+                    while((choice == 'Y'||choice == 'y')&&players.get(i).getHandValue()<21){
+                        System.out.println("Do you want to hit? [Y/N]");
+                        choice = keyboard.next().charAt(0);
+                        System.out.println();
+                        if(choice == 'n' || choice == 'N'){
+                            break;
+                        }
+                        players.get(i).addCardToHand(dealer.deal());
+                        System.out.println("Current " + players.get(i));
+                    }
+                    choice = 'y';
+                    System.out.println();
+                }
+                
+                
+                for(int j = 1; j < players.size(); j++){
+                    System.out.println();
+                    System.out.println("PLAYER "+j+":  ");
+                    System.out.println("Hand Value: "+players.get(j).getHandValue());
+                    System.out.println("Hand Size: "+players.get(j).getHandSize());
+                    System.out.println(players.get(j));
+                }
+                
                 System.out.println();
                 System.out.println("DEALER:  ");
                 System.out.println("Hand Value: "+dealer.getHandValue());
@@ -69,38 +86,59 @@ public class BlackJack
                 System.out.println(dealer);
                 System.out.println();
 
-                if(player.getHandValue()>21){
-                    if(dealer.getHandValue()>21){
-                        System.out.println("Player and Dealer both busted...");
+                //checking who wins
+                int max = 0;
+                for(int i = 0; i < players.size(); i++){
+                    if(players.get(i).getHandValue()<=21){
+                        if(players.get(i).getHandValue()>max){
+                            max = players.get(i).getHandValue();
+                        }
                     }
                     else{
-                        System.out.println("Player busted! Dealer wins.");
-                        dealer.setWinCount(dealer.getWinCount()+1);
+                        if (i == 0){
+                            System.out.println("Dealer busted!");
+                        }
+                        else{
+                            System.out.println("Player " + i + " busted!");
+                        }
                     }
                 }
-                else if(dealer.getHandValue()>21){
-                    System.out.println("Dealer busted! Player wins.");
-                    player.setWinCount(player.getWinCount()+1);
+                ArrayList<Playerable> winners = new ArrayList<Playerable>();
+                ArrayList<Integer> winNum = new ArrayList<Integer>();
+                for(int i = 0; i < players.size(); i++){
+                    if(players.get(i).getHandValue()<=21){
+                        if(players.get(i).getHandValue()==max){
+                           winners.add(players.get(i));
+                           winNum.add(i);
+                        }
+                    }
+                }
+                if(winners.size()>0){
+                    for(int i = 0; i < winners.size(); i++){
+                        if(winNum.get(i) == 0){
+                            System.out.println("Dealer " + " wins!");
+                        }
+                        else{
+                            System.out.println("Player " + winNum.get(i) + " wins!");
+                        }
+                        winners.get(i).setWinCount(winners.get(i).getWinCount()+1);
+                    }
+                    
                 }
                 else{
-                    if(player.getHandValue()>dealer.getHandValue()){
-                        System.out.println("Player has the bigger hand value! Player wins.");
-                        player.setWinCount(player.getWinCount()+1);
-                    }
-                    else if(dealer.getHandValue()>player.getHandValue()){
-                        System.out.println("Dealer has the bigger hand value! Dealer wins.");
-                        dealer.setWinCount(dealer.getWinCount()+1);
-                    }
-                    else{
-                        System.out.println("Player and Dealer have the same hand value.");
-                    }
+                    System.out.println("No one wins...");
                 }
-
-                System.out.println("Wins: " + player.getWinCount());
-                System.out.println("Losses: " + dealer.getWinCount());
-
+                
+                System.out.println();
+                System.out.println("Dealer - " + players.get(0).getWinCount()+" win(s)");
+                for(int i = 1; i < players.size(); i++){
+                    System.out.println("Player " + i + " - " + players.get(i).getWinCount()+" win(s)");
+                }
+                
+                
                 System.out.println("Play again? [Y/N]");
                 play = keyboard.next().charAt(0);
+                System.out.println();
             }while(play == 'y'||play=='Y');
 
 
